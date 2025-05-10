@@ -15,12 +15,11 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['last_name', 'first_name', 'middle_name', 'phone_number', 'email', 'password']
+        fields = ['last_name', 'first_name', 'middle_name', 'email', 'password']
         widgets = {
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Фамилия'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Имя'}),
             'middle_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Отчество'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Номер телефона'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
         }
 
