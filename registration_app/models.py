@@ -1,40 +1,32 @@
 from django.db import models
-from django.core.validators import RegexValidator
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
-class UserProfile(models.Model):
-    last_name = models.CharField(
-        max_length=100,
-        verbose_name="Фамилия",
-        help_text="Введите вашу фамилию"
-    )
-    first_name = models.CharField(
-        max_length=100,
-        verbose_name="Имя",
-        help_text="Введите ваше имя"
-    )
-    middle_name = models.CharField(
-        max_length=100,
-        verbose_name="Отчество",
-        blank=True, 
-        null=True,
-        help_text="Введите ваше отчество (если есть)"
-    )
-    email = models.EmailField(
-        unique=True,
-        verbose_name="Email",
-        help_text="Введите ваш email адрес"
-    )
-    password = models.CharField(
-        max_length=128,
-        verbose_name="Пароль",
-        help_text="Введите пароль"
-    )
+class UserProfileManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('Email обязателен.')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(email, password, **extra_fields)
+
+class UserProfile(AbstractBaseUser, PermissionsMixin):
+    last_name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100)
+    middle_name = models.CharField(max_length=100, blank=True)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=128)
+
+    objects = UserProfileManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['last_name', 'first_name']
 
     def __str__(self):
-        middle_name = self.middle_name if self.middle_name else ""
-        return f"{self.last_name} {self.first_name} {middle_name}".strip()
-
-    class Meta:
-        verbose_name = "Профиль пользователя"
-        verbose_name_plural = "Профили пользователей"
-        ordering = ['last_name', 'first_name']
+        return f"{self.last_name} {self.first_name}"
