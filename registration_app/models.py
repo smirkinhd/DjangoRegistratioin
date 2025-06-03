@@ -29,10 +29,6 @@ class UserProfile(models.Model):
         verbose_name="Пароль",
         help_text="Введите пароль"
     )
-    date_joined = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name="Дата регистрации"
-    )
 
     def __str__(self):
         middle_name = self.middle_name if self.middle_name else ""
